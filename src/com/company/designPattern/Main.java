@@ -6,6 +6,10 @@ import com.company.designPattern.adapter.HairDryer;
 import com.company.designPattern.adapter.SocketAdapter;
 import com.company.designPattern.aop.AopBrowser;
 import com.company.designPattern.decorator.*;
+import com.company.designPattern.facade.Ftp;
+import com.company.designPattern.facade.Reader;
+import com.company.designPattern.facade.SftpClient;
+import com.company.designPattern.facade.Writer;
 import com.company.designPattern.observer.Button;
 import com.company.designPattern.observer.IButtonListener;
 import com.company.designPattern.proxy.Browser;
@@ -14,7 +18,9 @@ import com.company.designPattern.proxy.IBrowser;
 import com.company.designPattern.singleton.AClazz;
 import com.company.designPattern.singleton.BClazz;
 import com.company.designPattern.singleton.SocketClient;
+import com.company.designPattern.strategy.*;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
@@ -83,6 +89,7 @@ public class Main {
         ICar audi5 = new A5(audi, "A5");
         audi5.showPrice();*/
 
+        /* 옵저버 패턴 예제
         Button button = new Button("버튼");
         button.addListener(new IButtonListener() {
             @Override
@@ -94,7 +101,54 @@ public class Main {
         button.click("메시지 전달 : click 1");
         button.click("메시지 전달 : click 2");
         button.click("메시지 전달 : click 3");
-        button.click("메시지 전달 : click 4");
+        button.click("메시지 전달 : click 4");*/
+
+        /* 퍼사드 패턴 예제
+
+        //퍼사드 패턴 적용 전
+        Ftp ftpClient = new Ftp("www.foo.co.kr", 22, "/home/etc");
+        ftpClient.connect();
+        ftpClient.moveDirectory();
+
+        Writer writer = new Writer("text.temp");
+        writer.fileConnect();
+        writer.write();
+
+        Reader reader = new Reader("text.tmp");
+        reader.fileConnect();
+        reader.fileRead();
+
+        reader.fileDisconnect();
+        writer.fileDisconnect();
+        ftpClient.disConnect();
+
+        //퍼사드 패턴 적용 후
+        SftpClient sftpClient = new SftpClient("www.foo.co.kr", 22, "/home/etc", "text.tmp");
+        sftpClient.connect();
+        sftpClient.write();
+        sftpClient.read();
+        sftpClient.disconnect();
+        */
+
+        Encoder encoder = new Encoder();
+
+        //base64
+        EncodingStrategy base64 = new Base64Strategy();
+        //normal
+        EncodingStrategy normal = new NormalStrategy();
+
+        String message = "hello java";
+        encoder.setEncodingStrategy(base64);
+        String base64Result = encoder.getMessage(message);
+        System.out.println(base64Result);
+
+        encoder.setEncodingStrategy(normal);
+        String normalResult = encoder.getMessage(message);
+        System.out.println(normalResult);
+
+        encoder.setEncodingStrategy(new AppendStrategy());
+        String appendResult = encoder.getMessage(message);
+        System.out.println(appendResult);
     }
 
     //콘센트
